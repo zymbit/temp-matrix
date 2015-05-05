@@ -4,9 +4,8 @@
 #include <DallasTemperature.h>
 
 #include "lights.h"
-#include "payload.h"
 
-#define BUF_SIZE 512
+#define BUF_SIZE 256
 #define REPORT_INTERVAL 30000  // report at least every 30 seconds
 /*-----( Declare Constants and Pin Numbers )-----*/
 #define TEMPERATURE_PRECISION 9
@@ -39,20 +38,20 @@ unsigned long now = 0;
 
 char buf[BUF_SIZE];
 
-payload _payload;
-
 int led = 13;
 
-bool eventCheck(int pin, float value, char* deviceId, unsigned long* lastReport, float* lastValue);
+bool sendData(int pin, float value, char* deviceId, unsigned long* lastReport, float* lastValue);
 
-void send_payload(payload *p) {
-  // don't send if the console is not connected
-  if(!Console.connected()) {
-    return;
+void printAddress(DeviceAddress deviceAddress)
+{
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    // zero pad the address if necessary
+    if (deviceAddress[i] < 16) Console.print("0");
+    Console.print(deviceAddress[i], HEX);
   }
-  payloadJson(buf, BUF_SIZE, p);
-  Console.println(buf);
 }
+
 void setup()  /****** SETUP: RUNS ONCE ******/
 { 
   Bridge.begin();
@@ -100,34 +99,22 @@ void loop(void)
   
   for (int i=1; i<=4; i++){
     temperatures[i] = sensors_bus1.getTempC(Therms[i]);
-    snprintf(buf, BUF_SIZE, "%u", Therms[i]);
-    if(eventCheck(SENSOR_1_PIN, temperatures[i], buf, &lastTemperatureReports[i], &lastTemperatures[i])) {
-      send_payload(&_payload);
-    }
+    sendData(SENSOR_1_PIN, temperatures[i], Therms[i], &lastTemperatureReports[i], &lastTemperatures[i]);
   }
   delay(200);
   for (int i=5; i<=8; i++){
     temperatures[i] = sensors_bus2.getTempC(Therms[i]); 
-    snprintf(buf, BUF_SIZE, "%u", Therms[i]);
-    if(eventCheck(SENSOR_2_PIN, temperatures[i], buf, &lastTemperatureReports[i], &lastTemperatures[i])) {
-      send_payload(&_payload);
-    }
+    sendData(SENSOR_2_PIN, temperatures[i], Therms[i], &lastTemperatureReports[i], &lastTemperatures[i]);
   }
   delay(200);
   for (int i=9; i<=12; i++){
     temperatures[i] = sensors_bus3.getTempC(Therms[i]); 
-    snprintf(buf, BUF_SIZE, "%u", Therms[i]);
-    if(eventCheck(SENSOR_3_PIN, temperatures[i], buf, &lastTemperatureReports[i], &lastTemperatures[i])) {
-      send_payload(&_payload);
-    }
+    sendData(SENSOR_3_PIN, temperatures[i], Therms[i], &lastTemperatureReports[i], &lastTemperatures[i]);
   }
   delay(200);
   for (int i=13; i<=16; i++){
     temperatures[i] = sensors_bus4.getTempC(Therms[i]); 
-    snprintf(buf, BUF_SIZE, "%u", Therms[i]);
-    if(eventCheck(SENSOR_4_PIN, temperatures[i], buf, &lastTemperatureReports[i], &lastTemperatures[i])) {
-      send_payload(&_payload);
-    }
+    sendData(SENSOR_4_PIN, temperatures[i], Therms[i], &lastTemperatureReports[i], &lastTemperatures[i]);
   }
   // for (int i=1; i<=NUM_TEMPERATURE_SENSORS; i++){
 //     Console.print(temperatures[i]);
@@ -138,24 +125,25 @@ void loop(void)
   
 }
 
-bool eventCheck(int pin, float value, char* deviceId, unsigned long* lastReport, float* lastValue)
+bool sendData(int pin, float value, DeviceAddress deviceId, unsigned long* lastReport, float* lastValue)
 {
   unsigned long now = millis();
 
   if((now - *lastReport > REPORT_INTERVAL) || value != *lastValue) {
-    int idx = 0;
 
-    _payload.millis = millis();
-    // change these items based on the device being acquired
-    _payload.pin = pin;
-    _payload.value = value;
-    snprintf(_payload.deviceId, DEVICE_ID_SIZE, "%s", deviceId);
-
+    Console.print("Pin=");
+    Console.print(pin);
+    Console.print(", DeviceID=");
+    printAddress(deviceId);
+    Console.print(", value=");
+    Console.print(value);
+    Console.println();
+    
     *lastValue = value;
     *lastReport = now;
-
+    
     blink(led);
-
+    
     return true;
   }
 
