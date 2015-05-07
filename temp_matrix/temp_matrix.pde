@@ -73,6 +73,9 @@ void setup()  /****** SETUP: RUNS ONCE ******/
   
 void loop(void)
 { 
+  if(!Console.connected()) {
+    return;
+  }
   int sensor_index = 0;
   
   // call sensors.requestTemperatures() to issue a global temperature 
@@ -96,7 +99,10 @@ bool sendData(int pin, float value, DeviceAddress deviceId, unsigned long* lastR
 
   if((now - *lastReport > REPORT_INTERVAL) || value != *lastValue) {
 
-    Console.print("Pin=");
+    Console.print("key=tempmatrix.pin");
+    Console.print(pin);
+
+    Console.print(", Pin=");
     Console.print(pin);
     Console.print(", DeviceID=");
     printAddress(deviceId);
