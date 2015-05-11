@@ -6,7 +6,7 @@
 #include "lights.h"
 
 #define BUF_SIZE 256
-#define REPORT_INTERVAL 30000  // report at least every 30 seconds
+#define REPORT_INTERVAL 300000  // report at least every 5 minutes
 /*-----( Declare Constants and Pin Numbers )-----*/
 #define TEMPERATURE_PRECISION 9
 #define NUM_BUSES 4
@@ -96,8 +96,9 @@ void loop(void)
 bool sendData(int pin, float value, DeviceAddress deviceId, unsigned long* lastReport, float* lastValue)
 {
   unsigned long now = millis();
+  float diff = value - *lastValue;
 
-  if((now - *lastReport > REPORT_INTERVAL) || value != *lastValue) {
+  if((now - *lastReport > REPORT_INTERVAL) || (abs(diff) > 2)) {
 
     Console.print("key=tempmatrix.pin");
     Console.print(pin);
