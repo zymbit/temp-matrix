@@ -85,17 +85,17 @@ class TempMatrix(object):
 
         else:
             self.logger.warning('Invalid Pin')
-            return
 
+        time.sleep(1)
         self.send('softkeyc', {'command': 'draw_text', 'text': temp, 'font': 'arial', 'size': 10, 'weight': 'bold'})
 
     # def temp_logger(self, pin, temp, device):
     #     if pin == 2:
 
-
     def send(self, action, params):
         self.messenger_client.send(action, params)
         self.messenger_client.loop()
+        time.sleep(.5)
 
     @property
     def logger(self):
