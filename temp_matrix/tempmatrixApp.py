@@ -15,6 +15,8 @@ from zymbit.client import Client
 INTERACTOR_HOST = os.environ.get('INTERACTOR_HOST', 'localhost')
 INTERACTOR_PORT = int(os.environ.get('INTERACTOR_PORT', 7732))
 
+sparkle =True
+
 
 class TempMatrix(object):
 
@@ -30,9 +32,13 @@ class TempMatrix(object):
         r, _, _ = select.select([self.client], [], [], 1.0)
         if self.client in r:
             subprocess.Popen("killall zymbit_sparkle".split(), stdout=subprocess.PIPE)
+            sparkle = True
             self.handle_message()
-        else:
+        elif sparkle:
             subprocess.Popen("/usr/bin/zymbit_sparkle".split(), stdout=subprocess.PIPE)
+            self.logger.info('SPARKLE RUNNING')
+            sparkle = False
+
 
     def data(self, envelope):
         pin = envelope['params']['Pin']
