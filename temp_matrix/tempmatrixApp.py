@@ -105,7 +105,7 @@ class TempMatrix(object):
         time.sleep(.2)
         self.send('softkeyd', {'command': 'draw_text', 'text': temp_str, 'font': 'arial', 'size': 10, 'weight': 'bold'})
         time.sleep(.1)
-        self.send('display', {'command': 'draw_bitmap', 'bitmap_name': 'zymbit_logo_32x32'})
+        self.send('display', {'command': 'draw_bitmap', 'bitmap_name': 'zymbit_logo_32x32', 'start_position': 'center'})
 
     def send(self, action, params):
         self.messenger_client.send(action, params)
