@@ -32,7 +32,7 @@ class TempMatrix(object):
             subprocess.Popen("killall zymbit_sparkle".split(), stdout=subprocess.PIPE)
             self.handle_message()
         else:
-            subprocess.Popen("zymbit_sparkle".split(), stdout=subprocess.PIPE)
+            subprocess.Popen("/usr/bin/zymbit_sparkle".split(), stdout=subprocess.PIPE)
 
     def data(self, envelope):
         pin = envelope['params']['Pin']
