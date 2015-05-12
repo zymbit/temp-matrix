@@ -1,5 +1,3 @@
-__author__ = 'evan'
-
 #!/usr/bin/env python
 __author__ = 'evan fairchild'
 
@@ -23,11 +21,10 @@ class TempMatrix(object):
         self.client = Client()
         self.messenger_client = MessengerClient(INTERACTOR_HOST, INTERACTOR_PORT)
 
-        self.max_log = [[0 for x in range(4)] for x in range(4)]
-        self.min_log = [[0 for x in range(4)] for x in range(4)]
-        self.avg_log = [[0 for x in range(4)] for x in range(4)]
-        self.probe_log = [[0 for x in range(4)] for x in range(4)]
-        self.send('matrix', {'command': 'clear'})
+        self.max_log = [[0 for x in range(4)] for y in range(4)]
+        self.min_log = [[0 for x in range(4)] for y in range(4)]
+        self.avg_log = [[0 for x in range(4)] for y in range(4)]
+        self.probe_log = [[0 for x in range(4)] for y in range(4)]
 
     def loop(self):
         while True:
@@ -69,33 +66,33 @@ class TempMatrix(object):
         if pin == 2:
             for i in range(0, len(row1)):
                 if row1[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_rectangle', 'start_position': start_action_row1[i], 'end_position': end_action_row1[i]})
+                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row1[i], 'end_position': end_action_row1[i]})
         elif pin == 4:
             for i in range(0, len(row2)):
                 if row2[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_rectangle', 'start_position': start_action_row2[i], 'end_position': end_action_row2[i]})
+                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row2[i], 'end_position': end_action_row2[i]})
         elif pin == 6:
             for i in range(0, len(row3)):
                 if row3[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_rectangle', 'start_position': start_action_row3[i], 'end_position': end_action_row3[i]})
+                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row3[i], 'end_position': end_action_row3[i]})
         elif pin == 8:
             for i in range(0, len(row4)):
                 if row4[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_rectangle', 'start_position': start_action_row4[i], 'end_position': end_action_row4[i]})
+                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row4[i], 'end_position': end_action_row4[i]})
 
         else:
             self.logger.warning('Invalid Pin')
 
         time.sleep(1)
-        self.send('softkeyc', {'command': 'draw_text', 'text': temp, 'font': 'arial', 'size': 10, 'weight': 'bold'})
+        self.send('softkeyd', {'command': 'draw_text', 'text': temp, 'font': 'arial', 'size': 10, 'weight': 'bold'})
 
     # def temp_logger(self, pin, temp, device):
     #     if pin == 2:
 
-    def send(self, action, params):
-        self.messenger_client.send(action, params)
-        self.messenger_client.loop()
-        time.sleep(.5)
+    # def send(self, action, params):
+    #     self.messenger_client.send(action, params)
+    #     #self.messenger_client.loop()
+    #     time.sleep(.5)
 
     @property
     def logger(self):
