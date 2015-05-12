@@ -21,11 +21,6 @@ class TempMatrix(object):
         self.client = Client()
         self.messenger_client = MessengerClient(INTERACTOR_HOST, INTERACTOR_PORT)
 
-        self.max_log = [[0 for x in range(4)] for y in range(4)]
-        self.min_log = [[0 for x in range(4)] for y in range(4)]
-        self.avg_log = [[0 for x in range(4)] for y in range(4)]
-        self.probe_log = [[0 for x in range(4)] for y in range(4)]
-
     def loop(self):
         while True:
             self.run()
@@ -38,11 +33,19 @@ class TempMatrix(object):
     def data(self, envelope):
         pin = envelope['params']['Pin']
         temp = float(envelope['params']['value'])
-        temp = temp + "C"
         device = str(envelope['params']['DeviceID'])
 
         self.mapper(pin, temp, device)
         # self.temp_logger(pin, temp, device)
+
+    def bitstream(self, row, probe):
+        MAT = [[0 for x in range(9)] for x in range(9)]
+        col = [0, 2, 4, 6]
+        for i in range(row, row+3):
+            for j in range(col[probe], col[probe]+3):
+                MAT[i][j] = 100
+
+        return MAT
 
     def mapper(self, pin, temp, device):
         # pin 2 -> row 1, pin 4 -> row 2, pin 6 -> row 3, pin 8 -> row
@@ -51,41 +54,46 @@ class TempMatrix(object):
         row3 = ['A2', '9F', '2D', 'B0']
         row4 = ['CF', 'A1', 'BF', '8E']
 
-        start_action_row1 = [[0, 0], [2, 0], [4, 0], [6, 0]]
-        start_action_row2 = [[0, 2], [2, 2], [4, 2], [6, 2]]
-        start_action_row3 = [[0, 4], [2, 4], [4, 4], [6, 4]]
-        start_action_row4 = [[0, 6], [2, 6], [4, 6], [6, 6]]
-
-        end_action_row1 = [[2, 2], [4, 2], [6, 2], [8, 2]]
-        end_action_row2 = [[2, 4], [4, 4], [6, 4], [8, 4]]
-        end_action_row3 = [[2, 6], [4, 6], [6, 6], [8, 6]]
-        end_action_row4 = [[2, 8], [4, 8], [6, 8], [8, 8]]
-
         self.send('matrix', {'command': 'clear'})
         time.sleep(.5)
 
         if pin == 2:
             for i in range(0, len(row1)):
                 if row1[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row1[i], 'end_position': end_action_row1[i]})
+                    self.send('matrix', {'command': 'draw_bitmap', 'bitstream': self.bitstream(0, i)})
         elif pin == 4:
             for i in range(0, len(row2)):
                 if row2[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row2[i], 'end_position': end_action_row2[i]})
+                    self.send('matrix', {'command': 'draw_bitmap', 'bitstream': self.bitstream(2, i)})
         elif pin == 6:
             for i in range(0, len(row3)):
                 if row3[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row3[i], 'end_position': end_action_row3[i]})
+                    self.send('matrix', {'command': 'draw_bitmap', 'bitstream': self.bitstream(4, i)})
         elif pin == 8:
             for i in range(0, len(row4)):
                 if row4[i] == device[-2:]:
-                    self.send('matrix', {'command': 'draw_line', 'start_position': start_action_row4[i], 'end_position': end_action_row4[i]})
+                    self.send('matrix', {'command': 'draw_bitmap', 'bitstream': self.bitstream(6, i)})
 
         else:
             self.logger.warning('Invalid Pin')
 
         time.sleep(1)
-        self.send('softkeyd', {'command': 'draw_text', 'text': temp, 'font': 'arial', 'size': 10, 'weight': 'bold'})
+
+        if temp <= 25:
+            self.send('edge', {'command': 'setColor', 'color': '000000'})
+        if temp <= 27:
+            self.send('edge', {'command': 'setColor', 'color': '0000ff'})
+        elif 27 < temp < 35:
+            colorChange('#0000ff')
+        elif 35 <= temp < 55:
+            self.send('edge', {'command': 'setColor', 'color': 'FFA500'})
+        elif temp >= 55:
+            self.send('edge', {'command': 'setColor', 'color': 'FF0000'})
+
+        time.sleep(.5)
+
+        temp_str = str(temp) + "C"
+        self.send('softkeyd', {'command': 'draw_text', 'text': temp_str, 'font': 'arial', 'size': 10, 'weight': 'bold'})
 
     def send(self, action, params):
         self.messenger_client.send(action, params)
