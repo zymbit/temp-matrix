@@ -55,7 +55,7 @@ class TempMatrix(object):
         row4 = ['CF', 'A1', 'BF', '8E']
 
         self.send('matrix', {'command': 'clear'})
-        self.send('display', {'command': 'clear'})
+        #self.send('display', {'command': 'clear'})
         time.sleep(.5)
 
         if pin == 2:
@@ -79,6 +79,8 @@ class TempMatrix(object):
             self.logger.warning('Invalid Pin')
 
         time.sleep(1)
+        self.send('matrix', {'command': 'draw_line', 'start_position': [0, 8], 'end_position': [8, 8]})
+
 
         self.send('edge', {'command': 'clear'})
         time.sleep(.2)
@@ -94,7 +96,9 @@ class TempMatrix(object):
 
         temp_str = str(temp) + "C"
         self.send('softkeyd', {'command': 'clear'})
-        #self.send('display', {'command': 'clear'})
+        self.send('softkeyu', {'command': 'clear'})
+        self.send('softkeyl', {'command': 'clear'})
+        self.send('softkeyr', {'command': 'clear'})
         time.sleep(.2)
         self.send('softkeyd', {'command': 'draw_text', 'text': temp_str, 'font': 'arial', 'size': 10, 'weight': 'bold'})
 
