@@ -86,7 +86,7 @@ class TempMatrix(object):
         time.sleep(.2)
 
         if temp <= 30:
-            self.send('edge', {'command': 'colo', 'hex': '0000ff'})
+            self.send('edge', {'command': 'color', 'hex': '0000ff'})
         elif 30 <= temp < 55:
             self.send('edge', {'command': 'color', 'hex': 'FFA500'})
         elif temp >= 55:
@@ -104,6 +104,8 @@ class TempMatrix(object):
         self.send('softkeyr', {'command': 'clear'})
         time.sleep(.2)
         self.send('softkeyd', {'command': 'draw_text', 'text': temp_str, 'font': 'arial', 'size': 10, 'weight': 'bold'})
+        time.sleep(.1)
+        self.send('display', {'command': 'clear'})
         time.sleep(.1)
         self.send('display', {'command': 'draw_bitmap', 'bitmap_name': 'zymbit_logo_32x32', 'start_position': 'center'})
 
