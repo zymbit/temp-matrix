@@ -79,12 +79,8 @@ class TempMatrix(object):
 
         time.sleep(1)
 
-        if temp <= 25:
-            self.send('edge', {'command': 'setColor', 'color': '000000'})
         if temp <= 27:
             self.send('edge', {'command': 'setColor', 'color': '0000ff'})
-        elif 27 < temp < 35:
-            colorChange('#0000ff')
         elif 35 <= temp < 55:
             self.send('edge', {'command': 'setColor', 'color': 'FFA500'})
         elif temp >= 55:
