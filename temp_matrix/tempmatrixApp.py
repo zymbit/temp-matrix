@@ -7,6 +7,7 @@ import logging
 import json
 import os
 import select
+import subprocess
 
 from zymbit.messenger.client import MessengerClient
 from zymbit.client import Client
@@ -28,7 +29,10 @@ class TempMatrix(object):
     def run(self):
         r, _, _ = select.select([self.client], [], [], 1.0)
         if self.client in r:
+            subprocess.Popen("killall zymbit_sparkle".split(), stdout=subprocess.PIPE)
             self.handle_message()
+        else:
+            subprocess.Popen("zymbit_sparkle".split(), stdout=subprocess.PIPE)
 
     def data(self, envelope):
         pin = envelope['params']['Pin']
@@ -87,7 +91,7 @@ class TempMatrix(object):
 
         if temp <= 30:
             self.send('edge', {'command': 'color', 'hex': '0000ff'})
-        elif 30 <= temp < 55:
+        elif 30 < temp < 55:
             self.send('edge', {'command': 'color', 'hex': 'FFA500'})
         elif temp >= 55:
             self.send('edge', {'command': 'color', 'hex': 'FF0000'})
