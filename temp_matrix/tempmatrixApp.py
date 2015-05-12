@@ -83,9 +83,9 @@ class TempMatrix(object):
         self.send('edge', {'command': 'clear'})
         time.sleep(.2)
 
-        if temp <= 27:
+        if temp <= 30:
             self.send('edge', {'command': 'setColor', 'color': '0000ff'})
-        elif 35 <= temp < 55:
+        elif 30 <= temp < 55:
             self.send('edge', {'command': 'setColor', 'color': 'FFA500'})
         elif temp >= 55:
             self.send('edge', {'command': 'setColor', 'color': 'FF0000'})
@@ -94,7 +94,7 @@ class TempMatrix(object):
 
         temp_str = str(temp) + "C"
         self.send('softkeyd', {'command': 'clear'})
-        self.send('display', {'command': 'clear'})
+        #self.send('display', {'command': 'clear'})
         time.sleep(.2)
         self.send('softkeyd', {'command': 'draw_text', 'text': temp_str, 'font': 'arial', 'size': 10, 'weight': 'bold'})
 
