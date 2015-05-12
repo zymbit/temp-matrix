@@ -38,17 +38,18 @@ class TempMatrix(object):
     def data(self, envelope):
         pin = envelope['params']['Pin']
         temp = float(envelope['params']['value'])
+        temp = temp + "C"
         device = str(envelope['params']['DeviceID'])
 
         self.mapper(pin, temp, device)
         # self.temp_logger(pin, temp, device)
 
     def mapper(self, pin, temp, device):
-        # pin 2 -> row 1, pin 4 -> row 2, pin 6 -> row 3, pin 8 -> row 4
-        row1 = ['03', '6C', 'E2', '35']
-        row2 = ['52', 'AB', '83', '9B']
-        row3 = ['75', '83', 'AB', '9B']
-        row4 = ['CF', '8E', 'A1', 'BF']
+        # pin 2 -> row 1, pin 4 -> row 2, pin 6 -> row 3, pin 8 -> row
+        row1 = ['35', 'E2', '6C', '03']
+        row2 = ['9B', '83', 'AB', '75']
+        row3 = ['A2', '9F', '2D', 'B0']
+        row4 = ['CF', 'A1', 'BF', '8E']
 
         start_action_row1 = [[0, 0], [2, 0], [4, 0], [6, 0]]
         start_action_row2 = [[0, 2], [2, 2], [4, 2], [6, 2]]
@@ -86,13 +87,10 @@ class TempMatrix(object):
         time.sleep(1)
         self.send('softkeyd', {'command': 'draw_text', 'text': temp, 'font': 'arial', 'size': 10, 'weight': 'bold'})
 
-    # def temp_logger(self, pin, temp, device):
-    #     if pin == 2:
-
-    # def send(self, action, params):
-    #     self.messenger_client.send(action, params)
-    #     #self.messenger_client.loop()
-    #     time.sleep(.5)
+    def send(self, action, params):
+        self.messenger_client.send(action, params)
+        self.messenger_client.loop()
+        time.sleep(.5)
 
     @property
     def logger(self):
