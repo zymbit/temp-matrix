@@ -15,8 +15,6 @@ from zymbit.client import Client
 INTERACTOR_HOST = os.environ.get('INTERACTOR_HOST', 'localhost')
 INTERACTOR_PORT = int(os.environ.get('INTERACTOR_PORT', 7732))
 
-sparkle =True
-
 
 class TempMatrix(object):
 
@@ -32,12 +30,15 @@ class TempMatrix(object):
         r, _, _ = select.select([self.client], [], [], 1.0)
         if self.client in r:
             subprocess.Popen("killall zymbit_sparkle".split(), stdout=subprocess.PIPE)
-            sparkle = True
+            self.sparkle = True
             self.handle_message()
-        elif sparkle:
+            self.count = 0
+
+        elif self.sparkle and self.count >= 100:
             subprocess.Popen("/usr/bin/zymbit_sparkle".split(), stdout=subprocess.PIPE)
             self.logger.info('SPARKLE RUNNING')
-            sparkle = False
+            self.sparkle = False
+        self.count += 1
 
 
     def data(self, envelope):
@@ -167,6 +168,7 @@ class TempMatrix(object):
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    sparkle = True
 
     while True:
         try:
@@ -174,8 +176,6 @@ if __name__ == '__main__':
             logger.info('Subscribed to temp-matrix!')
             tempmatrix = TempMatrix()
             tempmatrix.loop()
-
-
 
         except Exception, exc:
             logger = logging.getLogger(__name__)
