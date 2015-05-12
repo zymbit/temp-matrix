@@ -100,7 +100,7 @@ class TempMatrix(object):
         self.send('softkeyu', {'command': 'clear'})
         time.sleep(.1)
         self.send('softkeyl', {'command': 'clear'})
-        time.cleep(.1)
+        time.sleep(.1)
         self.send('softkeyr', {'command': 'clear'})
         time.sleep(.2)
         self.send('softkeyd', {'command': 'draw_text', 'text': temp_str, 'font': 'arial', 'size': 10, 'weight': 'bold'})
