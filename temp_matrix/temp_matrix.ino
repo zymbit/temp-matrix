@@ -9,27 +9,24 @@
 #define REPORT_INTERVAL 300000  // report at least every 5 minutes
 /*-----( Declare Constants and Pin Numbers )-----*/
 #define TEMPERATURE_PRECISION 9
-#define NUM_BUSES 4
 #define NUM_SENSORS_PER_BUS 4
+
+/* change the number of busses being used here */
+#define NUM_BUSES 4
 #define NUM_TEMPERATURE_SENSORS NUM_BUSES*NUM_SENSORS_PER_BUS
 
+/* update sensor pins according to NUM_BUSES above */
 int sensor_pins[] = {2, 4, 6, 8};
 
 /*-----( Declare objects )-----*/
-OneWire onewire_buses[] = {
-  OneWire(sensor_pins[0]),
-  OneWire(sensor_pins[1]),
-  OneWire(sensor_pins[2]),
-  OneWire(sensor_pins[3])
-};
+OneWire onewire_buses[NUM_BUSES];
+DallasTemperature sensor_buses[NUM_BUSES];
 
-DallasTemperature sensor_buses[] = {
-  DallasTemperature(&onewire_buses[0]),
-  DallasTemperature(&onewire_buses[1]),
-  DallasTemperature(&onewire_buses[2]),
-  DallasTemperature(&onewire_buses[3])
-};
-  
+for(int i = 0; i < NUM_BUSES; i++) {
+  onewire_buses[i] = OneWire(sensor_pins[i]);
+  DallasTemperature(&onewire_buses[i]),
+}
+
 DeviceAddress Therms[NUM_TEMPERATURE_SENSORS];
 
 int count = 1;
