@@ -19,13 +19,8 @@
 int sensor_pins[] = {2};
 
 /*-----( Declare objects )-----*/
-OneWire onewire_buses[NUM_BUSES];
-DallasTemperature sensor_buses[NUM_BUSES];
-
-for(int i = 0; i < NUM_BUSES; i++) {
-  onewire_buses[i] = OneWire(sensor_pins[i]);
-  DallasTemperature(&onewire_buses[i]),
-}
+OneWire *onewire_buses[NUM_BUSES];
+DallasTemperature *sensor_buses[NUM_BUSES];
 
 DeviceAddress Therms[NUM_TEMPERATURE_SENSORS];
 
@@ -54,13 +49,18 @@ void printAddress(DeviceAddress deviceAddress)
 
 void setup()  /****** SETUP: RUNS ONCE ******/
 {
+  for(int i = 0; i < NUM_BUSES; i++) {
+    onewire_buses[i] = new OneWire(sensor_pins[i]);
+    sensor_buses[i] = new DallasTemperature(onewire_buses[i]);
+  }
+
   Bridge.begin();
   Console.begin();
 
   for (int i=0; i<NUM_SENSORS_PER_BUS; i++){
     for (int j=0; j<=NUM_BUSES; j++){
-      sensor_buses[i].getAddress(Therms[NUM_SENSORS_PER_BUS*i + j], j);
-      sensor_buses[i].setResolution(Therms[NUM_SENSORS_PER_BUS*i + j], TEMPERATURE_PRECISION);    
+      sensor_buses[i]->getAddress(Therms[NUM_SENSORS_PER_BUS*i + j], j);
+      sensor_buses[i]->setResolution(Therms[NUM_SENSORS_PER_BUS*i + j], TEMPERATURE_PRECISION);
     }
 
     delay(100);
@@ -78,11 +78,11 @@ void loop(void)
   // call sensors.requestTemperatures() to issue a global temperature
 
   for (int i=0; i<NUM_SENSORS_PER_BUS; i++){
-    sensor_buses[i].requestTemperatures();
+    sensor_buses[i]->requestTemperatures();
     for (int j=0; j<NUM_BUSES; j++){
       sensor_index = NUM_SENSORS_PER_BUS*i + j;
 
-      temperatures[sensor_index] = sensor_buses[i].getTempC(Therms[sensor_index]);
+      temperatures[sensor_index] = sensor_buses[i]->getTempC(Therms[sensor_index]);
       sendData(sensor_pins[i], temperatures[sensor_index], Therms[sensor_index], &lastTemperatureReports[sensor_index], &lastTemperatures[sensor_index]);
     }
 
