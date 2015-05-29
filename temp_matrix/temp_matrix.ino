@@ -53,41 +53,41 @@ void printAddress(DeviceAddress deviceAddress)
 }
 
 void setup()  /****** SETUP: RUNS ONCE ******/
-{ 
+{
   Bridge.begin();
   Console.begin();
-  
+
   for (int i=0; i<NUM_SENSORS_PER_BUS; i++){
     for (int j=0; j<=NUM_BUSES; j++){
       sensor_buses[i].getAddress(Therms[NUM_SENSORS_PER_BUS*i + j], j);
       sensor_buses[i].setResolution(Therms[NUM_SENSORS_PER_BUS*i + j], TEMPERATURE_PRECISION);    
     }
-    
+
     delay(100);
   }
 }
-  
-  
+
+
 void loop(void)
-{ 
+{
   if(!Console.connected()) {
     return;
   }
   int sensor_index = 0;
-  
-  // call sensors.requestTemperatures() to issue a global temperature 
-  
+
+  // call sensors.requestTemperatures() to issue a global temperature
+
   for (int i=0; i<NUM_SENSORS_PER_BUS; i++){
     sensor_buses[i].requestTemperatures();
     for (int j=0; j<NUM_BUSES; j++){
       sensor_index = NUM_SENSORS_PER_BUS*i + j;
-      
+
       temperatures[sensor_index] = sensor_buses[i].getTempC(Therms[sensor_index]);
       sendData(sensor_pins[i], temperatures[sensor_index], Therms[sensor_index], &lastTemperatureReports[sensor_index], &lastTemperatures[sensor_index]);
     }
-    
+
     delay(100);
-  }  
+  }
 }
 
 bool sendData(int pin, float value, DeviceAddress deviceId, unsigned long* lastReport, float* lastValue)
@@ -107,12 +107,12 @@ bool sendData(int pin, float value, DeviceAddress deviceId, unsigned long* lastR
     Console.print(", value=");
     Console.print(value);
     Console.println();
-    
+
     *lastValue = value;
     *lastReport = now;
-    
+
     blink(led);
-    
+
     return true;
   }
 
