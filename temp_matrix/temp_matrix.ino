@@ -12,11 +12,11 @@
 #define NUM_SENSORS_PER_BUS 4
 
 /* change the number of busses being used here */
-#define NUM_BUSES 4
+#define NUM_BUSES 1
 #define NUM_TEMPERATURE_SENSORS NUM_BUSES*NUM_SENSORS_PER_BUS
 
 /* update sensor pins according to NUM_BUSES above */
-int sensor_pins[] = {2, 4, 6, 8};
+int sensor_pins[] = {2};
 
 /*-----( Declare objects )-----*/
 OneWire onewire_buses[NUM_BUSES];
