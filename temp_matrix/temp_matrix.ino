@@ -95,7 +95,7 @@ bool sendData(int pin, float value, DeviceAddress deviceId, unsigned long* lastR
   unsigned long now = millis();
   float diff = value - *lastValue;
 
-  if((now - *lastReport > REPORT_INTERVAL) || (diff) > 10) {
+  if((now - *lastReport > REPORT_INTERVAL) || (diff != 0.0)) {
 
     Console.print("key=tempmatrix.pin");
     Console.print(pin);
