@@ -97,8 +97,8 @@ bool sendData(int pin, float value, DeviceAddress deviceId, unsigned long* lastR
 
   if((now - *lastReport > REPORT_INTERVAL) || (diff != 0.0)) {
 
-    Console.print("key=tempmatrix.pin");
-    Console.print(pin);
+    Console.print("key=temperature.");
+    printAddress(deviceId);
 
     Console.print(", Pin=");
     Console.print(pin);
