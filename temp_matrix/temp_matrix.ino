@@ -57,10 +57,10 @@ void setup()  /****** SETUP: RUNS ONCE ******/
   Bridge.begin();
   Console.begin();
 
-  for (int i=0; i<NUM_SENSORS_PER_BUS; i++){
-    for (int j=0; j<=NUM_BUSES; j++){
-      sensor_buses[i]->getAddress(Therms[NUM_SENSORS_PER_BUS*i + j], j);
-      sensor_buses[i]->setResolution(Therms[NUM_SENSORS_PER_BUS*i + j], TEMPERATURE_PRECISION);
+  for (int i=0; i<NUM_BUSES; i++){
+    for (int j=0; j<=NUM_SENSORS_PER_BUS; j++){
+      sensor_buses[i]->getAddress(Therms[NUM_BUSES*i + j], j);
+      sensor_buses[i]->setResolution(Therms[NUM_BUSES*i + j], TEMPERATURE_PRECISION);
     }
 
     delay(100);
@@ -77,10 +77,10 @@ void loop(void)
 
   // call sensors.requestTemperatures() to issue a global temperature
 
-  for (int i=0; i<NUM_SENSORS_PER_BUS; i++){
+  for (int i=0; i<NUM_BUSES; i++){
     sensor_buses[i]->requestTemperatures();
-    for (int j=0; j<NUM_BUSES; j++){
-      sensor_index = NUM_SENSORS_PER_BUS*i + j;
+    for (int j=0; j<NUM_SENSORS_PER_BUS; j++){
+      sensor_index = NUM_BUSES*i + j;
 
       temperatures[sensor_index] = sensor_buses[i]->getTempC(Therms[sensor_index]);
       sendData(sensor_pins[i], temperatures[sensor_index], Therms[sensor_index], &lastTemperatureReports[sensor_index], &lastTemperatures[sensor_index]);
