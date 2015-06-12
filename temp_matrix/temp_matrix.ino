@@ -6,7 +6,7 @@
 #include "lights.h"
 
 #define BUF_SIZE 256
-#define REPORT_INTERVAL 300000  // report at least every 5 minutes
+#define REPORT_INTERVAL 60000  // report at least every minute
 /*-----( Declare Constants and Pin Numbers )-----*/
 #define TEMPERATURE_PRECISION 9
 #define NUM_SENSORS_PER_BUS 4
